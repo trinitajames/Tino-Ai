@@ -1,22 +1,29 @@
 require('dotenv').config();
 const express = require('express');
 const axios = require('axios');
-require('dotenv').config();
 
 const app = express();
 const port = 3001;
 
-
 app.use(express.static('public')); // Serve static files (HTML, CSS, JS)
 app.use(express.json()); // Parse JSON requests
 
-// Load your OpenAI API key from environment variables
+// Load OpenAI API key from environment variables
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
-app.post('/chat', async (req, res) => {
-    const userMessage = req.body.message.toLowerCase();
+if (!OPENAI_API_KEY) {
+    console.error("❌ ERROR: Missing OpenAI API Key. Set 'OPENAI_API_KEY' in your .env file.");
+    process.exit(1);
+}
 
-    // Predefined emotional responses
+app.post('/chat', async (req, res) => {
+    const userMessage = req.body.message?.toLowerCase().trim(); // Handle undefined input
+
+    if (!userMessage) {
+        return res.status(400).json({ error: "Message cannot be empty!" });
+    }
+
+    // Predefined responses
     const emotionalResponses = {
         "i am sad": "I’m sorry to hear that. Do you want to share why you’re feeling this way?",
         "i am happy": "That’s amazing to hear! What made your day so great?",
@@ -34,7 +41,7 @@ app.post('/chat', async (req, res) => {
         return res.json({ message: emotionalResponses[userMessage] });
     }
 
-    // Otherwise, use OpenAI API for a dynamic response
+    // OpenAI API call for dynamic responses
     try {
         const response = await axios.post(
             'https://api.openai.com/v1/completions',
@@ -46,22 +53,22 @@ app.post('/chat', async (req, res) => {
             },
             {
                 headers: {
-                    Authorization: `Bearer ${OPENAI_API_KEY}`,
+                    'Authorization': `Bearer ${OPENAI_API_KEY}`,
+                    'Content-Type': 'application/json'
                 },
             }
         );
 
-        // Send OpenAI's response back to the user
-        const aiResponse = response.data.choices[0].text.trim();
+        const aiResponse = response.data.choices?.[0]?.text?.trim() || "I'm not sure how to respond to that.";
         res.json({ message: aiResponse });
+
     } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Something went wrong!' });
+        console.error("❌ OpenAI API Error:", error.response?.data || error.message);
+        res.status(500).json({ error: "Something went wrong! Please try again later." });
     }
 });
 
 // Start the server
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+    console.log(`🚀 Server running at http://localhost:${port}`);
 });
-

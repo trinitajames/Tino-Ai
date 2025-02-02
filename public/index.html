@@ -1,21 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tino AI Chatbot</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tino Ai Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-  <div id="chat-container">
-    <h1>Tino AI Chatbot</h1>
-    <h3>Ask me anything or just chat with me!</h3>
-    <div id="chat-output"></div>
-    <input type="text" id="user-input" placeholder="Type your message here and press Enter..." />
-    <footer>
-      <p>Made with ❤️ by Trinita James</p>
-    </footer>
-  </div>
-  <script src="script.js"></script>
+<body class="bg-gradient-to-r from-pink-400 to-purple-500 text-white h-screen flex items-center justify-center">
+    <div class="w-full max-w-md p-6 bg-white text-black rounded-lg shadow-lg flex flex-col">
+        <!-- Header -->
+        <header class="text-center py-4">
+            <h1 class="text-4xl font-bold text-purple-600">Tino Ai Chatbot</h1>
+        </header>
+
+        <!-- Chat Container -->
+        <div class="flex-grow flex flex-col justify-between p-4">
+            <div class="flex flex-col space-y-4 overflow-y-auto max-h-96 bg-white text-black p-4 rounded-lg shadow-lg">
+                <!-- Chat messages (dynamically generated) -->
+                <div id="chatbox" class="space-y-2">
+                    <!-- Example Messages -->
+                    <div class="bg-pink-300 p-2 rounded-lg">
+                        <p class="text-sm">Hello, how can I assist you today?</p>
+                    </div>
+                </div>
+
+                <!-- Input Area -->
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="userInput" class="flex-grow p-2 rounded-lg border-2 border-purple-300 outline-none" placeholder="Type your message..." onkeydown="checkEnter(event)" />
+                    <button onclick="sendMessage()" class="bg-purple-600 text-white px-4 py-2 rounded-lg">Send</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="bg-purple-600 py-4 text-center">
+            <p class="text-lg">Made by Trinita James</p>
+        </footer>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const userInput = document.getElementById('userInput').value;
+            if (userInput.trim() === "") return;
+
+            // Display user message
+            const chatbox = document.getElementById('chatbox');
+            chatbox.innerHTML += `<p><strong>You:</strong> ${userInput}</p>`;
+            document.getElementById('userInput').value = '';
+
+            // Get chatbot response based on user input
+            const response = getChatbotResponse(userInput);
+
+            // Display chatbot response
+            chatbox.innerHTML += `<p><strong>Tino:</strong> ${response}</p>`;
+            chatbox.scrollTop = chatbox.scrollHeight;  // Scroll to the latest message
+        }
+
+        // Function to check if Enter key is pressed
+        function checkEnter(event) {
+            if (event.key === "Enter") {
+                sendMessage();
+            }
+        }
+
+        // Define a function for the rule-based responses
+        function getChatbotResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+
+            // Rule-based responses
+            if (message.includes("hello") || message.includes("hi") || message.includes("hey")) {
+                return "Hello there! How can I assist you today?";
+            } else if (message.includes("how are you") || message.includes("hru")) {
+                return "I'm just a chatbot, but I'm doing great! How about you?";
+            } else if (message.includes("name")) {
+                return "I am Tino, your friendly AI chatbot!";
+            } else if (message.includes("bye")) {
+                return "Goodbye! It was nice chatting with you.";
+            } else if (message.includes("thank you") || message.includes("thanks")) {
+                return "You're welcome! Feel free to ask me anything.";
+            } else if (message.includes("help")) {
+                return "Sure, I'm here to help. What do you need assistance with?";
+            } else if (message.includes("i am happy") || message.includes("i'm happy")) {
+                return "That's wonderful to hear! Stay happy!";
+            } else if (message.includes("i am sad") || message.includes("i'm sad")) {
+                return "I'm sorry to hear that. Remember, it's okay to feel down sometimes. How can I help?";
+            } else if (message.includes("i am depressed") || message.includes("i'm depressed")) {
+                return "I'm really sorry you're feeling this way. Please talk to someone you trust. You’re not alone!";
+            } else if (message.includes("tell me a joke")) {
+                return "Why don't skeletons fight each other? They don't have the guts!";
+            } else if (message.includes("tell me a riddle")) {
+                return "What has keys but can't open locks? A piano!";
+            } else if (message.includes("who are you")) {
+                return "I am Tino, your friendly AI chatbot, here to assist you!";
+            } else {
+                return "Sorry, I didn't understand that. Can you ask me something else?";
+            }
+        }
+    </script>
 </body>
 </html>
